@@ -46,10 +46,9 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void disLike(word) {
-    if (favorites.contains(word)) {
-      favorites.remove(word);
-    }
+  void removeFavorite(WordPair word) {
+    favorites.remove(word);
+    notifyListeners();
   }
 }
 
@@ -169,7 +168,9 @@ class FavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    var theme = Theme.of(context);
     var favoriteWords = appState.favorites;
+
     if (favoriteWords.isEmpty) {
       return Center(
         child: Text('No favourites...'),
@@ -182,10 +183,19 @@ class FavoritesPage extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Text('You have ${favoriteWords.length} favourite words!'),
         ),
-        for (var pair in favoriteWords)
+        for (var word in favoriteWords)
           ListTile(
-            leading: Icon(Icons.favorite),
-            title: Text(pair.asCamelCase),
+            leading: IconButton(
+              icon: Icon(
+                Icons.heart_broken,
+                semanticLabel: 'Delete',
+              ),
+              color: theme.colorScheme.primary,
+              onPressed: () {
+                appState.removeFavorite(word);
+              },
+            ),
+            title: Text(word.asCamelCase),
           ),
       ],
     );
